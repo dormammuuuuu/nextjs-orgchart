@@ -31,8 +31,8 @@ yarn add @dormammuuuuu/nextjs-orgchart
 
 Include the provided CSS files in your project:
 ```javascript
-import '@dormammuuuuu/nextjs-orgchart/dist/ChartContainer.css';
-import '@dormammuuuuu/nextjs-orgchart/dist/ChartNode.css';
+import '@dormammuuuuu/nextjs-orgchart/ChartContainer.css';
+import '@dormammuuuuu/nextjs-orgchart/ChartNode.css';
 ```
 
 Add custom styles to the chart or nodes using the provided class names:
@@ -46,8 +46,8 @@ Add custom styles to the chart or nodes using the provided class names:
 ```javascript
 import React from 'react';
 import ChartContainer from '@dormammuuuuu/nextjs-orgchart';
-import '@dormammuuuuu/nextjs-orgchart/dist/ChartContainer.css';
-import '@dormammuuuuu/nextjs-orgchart/dist/ChartNode.css';
+import '@dormammuuuuu/nextjs-orgchart/ChartContainer.css';
+import '@dormammuuuuu/nextjs-orgchart/ChartNode.css';
 
 const data = {
   id: "1",
