@@ -1,0 +1,78 @@
+{
+  "name": "@dormammuuuuu/nextjs-orgchart",
+  "version": "1.0.0",
+  "description": "A React component for rendering organization charts in Next.js applications.",
+  "main": "./dist/nextjs-orgchart.umd.js",
+  "module": "./dist/nextjs-orgchart.es.js",
+  "types": "./dist/types/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "package.json"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/nextjs-orgchart.es.js",
+      "require": "./dist/nextjs-orgchart.umd.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./ChartContainer.css": {
+      "default": "./dist/ChartContainer.css"
+    },
+    "./ChartNode.css": {
+      "default": "./dist/ChartNode.css"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dormammuuuuu/nextjs-orgchart"
+  },
+  "scripts": {
+    "start": "vite",
+    "clean": "rm -rf dist",
+    "build": "vite build && cp src/*.css dist/",
+    "postbuild": "mkdirp dist/types && cp src/types/index.d.ts dist/types/",
+    "preview": "vite preview",
+    "publish:npm": "vite build && cp -r src/components dist"
+  },
+  "keywords": [
+      "nextjs",
+      "orgchart",
+      "organization chart",
+      "org chart",
+      "tree",
+      "hierarchy",
+      "team structure",
+      "react component",
+      "nextjs component",
+      "data visualization",
+      "employee chart",
+      "organizational structure"
+  ],
+  "author": "dormammuuuuu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dormammuuuuu/nextjs-orgchart/issues"
+  },
+  "homepage": "https://github.com/dormammuuuuu/nextjs-orgchart#readme",
+  "dependencies": {
+    "@dormammuuuuu/json-helper": "^3.0.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@vitejs/plugin-react": "^4.3.3",
+    "mkdirp": "^3.0.1",
+    "typescript": "^5.6.3",
+    "uuid": "^7.0.2",
+    "vite": "^5.4.10"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  }
+}
