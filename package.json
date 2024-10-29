@@ -5,6 +5,7 @@
   "main": "./dist/nextjs-orgchart.umd.js",
   "module": "./dist/nextjs-orgchart.es.js",
   "types": "./dist/types/index.d.ts",
+  "private": false,
   "files": [
     "dist",
     "README.md",
