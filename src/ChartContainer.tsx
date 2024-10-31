@@ -8,6 +8,7 @@ import React, {
 import { selectNodeService } from "./service";
 // @ts-ignore
 import { JSONHelper } from "@dormammuuuuu/json-helper";
+import { toJpeg, toPng } from "html-to-image";
 import ChartNode from "./ChartNode";
 
 interface Datasource {
@@ -183,52 +184,42 @@ const ChartContainer = forwardRef<unknown, ChartContainerProps>(
       updateChartScale(newScale);
     };
 
-    const exportPDF = (canvas: HTMLCanvasElement, exportFilename: string) => {
-      import("jspdf").then((jsPDF) => {
-        const canvasWidth = Math.floor(canvas.width);
-        const canvasHeight = Math.floor(canvas.height);
-        const doc =
-          canvasWidth > canvasHeight
-            ? new jsPDF.jsPDF({
-                orientation: "landscape",
-                unit: "px",
-                format: [canvasWidth, canvasHeight],
-              })
-            : new jsPDF.jsPDF({
-                orientation: "portrait",
-                unit: "px",
-                format: [canvasHeight, canvasWidth],
-              });
-        doc.addImage(canvas.toDataURL("image/jpeg", 1.0), "JPEG", 0, 0, canvasWidth, canvasHeight);
-        doc.save(exportFilename + ".pdf");
-      });
+    const exportPDF = (dataUrl: string, exportFilename: string) => {
+      const newWindow = window.open("", "_blank");
+      if (newWindow) {
+        newWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>${exportFilename}</title>
+          </head>
+          <body>
+            <img src="${dataUrl}" id="chartImage" style="max-width: 100%;" />
+          </body>
+          </html>
+        `);
+        newWindow.document.close();
+        const img = newWindow.document.getElementById("chartImage") as HTMLImageElement;
+        img.onload = () => {
+          newWindow.print();
+        };
+      }
     };
 
-    const exportPNG = (canvas: HTMLCanvasElement, exportFilename: string) => {
-      const isWebkit = "WebkitAppearance" in document.documentElement.style;
-      const isFf = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-      const isEdge =
-        navigator.appName === "Microsoft Internet Explorer" ||
-        (navigator.appName === "Netscape" &&
-          navigator.appVersion.indexOf("Edge") > -1);
-
-      if ((!isWebkit && !isFf) || isEdge) {
-        const link = document.createElement('a');
-        link.href = canvas.toDataURL();
-        link.download = exportFilename + ".png";
-        link.click();
-      } else {
-        setDataURL(canvas.toDataURL());
-        setDownload(exportFilename + ".png");
-        downloadButton.current!.click();
-      }
+    const exportPNG = (dataUrl: string, exportFilename: string) => {
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = `${exportFilename}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     };
 
     const changeHierarchy = (draggedItemData: Datasource, dropTargetId: string) => {
       const nodeRemoved = dsDigger.removeNode(draggedItemData.id);
       if (nodeRemoved) {
         dsDigger.addChildren(dropTargetId, draggedItemData);
-        // @ts-ignore - This is a hack to force a re-render
+        // @ts-ignore - This is a hack and not yet implemented in the library
         setDS({ ...dsDigger.getAllNodes() });
       }
       return Promise.resolve();
@@ -241,21 +232,14 @@ const ChartContainer = forwardRef<unknown, ChartContainerProps>(
         container.current!.scrollLeft = 0;
         const originalScrollTop = container.current!.scrollTop;
         container.current!.scrollTop = 0;
-        import("html2canvas").then((html2canvasModule) => {
-          const html2canvas = html2canvasModule.default;
-          html2canvas(chart.current!, {
-            width: chart.current!.clientWidth,
-            height: chart.current!.clientHeight,
-            onclone: function (clonedDoc) {
-              (clonedDoc.querySelector(".orgchart") as HTMLElement)!.style.background = "none";
-              (clonedDoc.querySelector(".orgchart") as HTMLElement)!.style.transform = "";
-            },
-          }).then(
-            (canvas) => {
+        document.fonts.ready.then(() => {
+          const exportFunction = exportFileextension.toLowerCase() === "pdf" ? toJpeg : toPng;
+          exportFunction(chart.current!, { cacheBust: true, quality: 1, includeQueryParams: true, backgroundColor: '#fff' }).then(
+            (dataUrl) => {
               if (exportFileextension.toLowerCase() === "pdf") {
-                exportPDF(canvas, exportFilename);
+                exportPDF(dataUrl, exportFilename);
               } else {
-                exportPNG(canvas, exportFilename);
+                exportPNG(dataUrl, exportFilename);
               }
               setExporting(false);
               container.current!.scrollLeft = originalScrollLeft;
@@ -270,17 +254,13 @@ const ChartContainer = forwardRef<unknown, ChartContainerProps>(
         });
       },
       expandAllNodes: () => {
-        chart.current!
-          .querySelectorAll(
-            ".oc-node.hidden, .oc-hierarchy.hidden, .isSiblingsCollapsed, .isAncestorsCollapsed"
-          )
-          .forEach((el) => {
-            el.classList.remove(
-              "hidden",
-              "isSiblingsCollapsed",
-              "isAncestorsCollapsed"
-            );
-          });
+        if (chart.current) {
+          chart.current
+            .querySelectorAll(".oc-hierarchy .hidden")
+            .forEach((el) => {
+              el.classList.remove("hidden");
+            });
+        }
       },
     }));
 

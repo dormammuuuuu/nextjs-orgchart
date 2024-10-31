@@ -1,6 +1,6 @@
 {
   "name": "@dormammuuuuu/nextjs-orgchart",
-  "version": "1.0.0",
+  "version": "1.0.1-a",
   "description": "A React component for rendering organization charts in Next.js applications.",
   "main": "./dist/nextjs-orgchart.umd.js",
   "module": "./dist/nextjs-orgchart.es.js",
@@ -58,8 +58,7 @@
   "homepage": "https://github.com/dormammuuuuu/nextjs-orgchart#readme",
   "dependencies": {
     "@dormammuuuuu/json-helper": "^3.0.0",
-    "html2canvas": "^1.4.1",
-    "jspdf": "^2.5.1",
+    "html-to-image": "^1.11.11",
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0",
     "rxjs": "^7.8.1"
